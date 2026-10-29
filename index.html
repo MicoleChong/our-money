@@ -65,6 +65,12 @@ const KEY='our-money-v1', expenseCats=['🍚 饮食','🏠 房屋','👶 宝宝'
       el('joinCode').value='';await loadFamily(activeUserId);el('inviteMsg').textContent='🎉 已成功加入家庭！';
     }catch(e){el('joinMsg').textContent='加入失败：'+e.message}finally{btn.disabled=false}
   };
+  // 恢复登录状态；登录和退出后同步更新页面。
+  client.auth.getUser().then(({data,error})=>{
+    if(error)msg('登录状态检查失败：'+error.message);
+    show(data?.user||null);
+  }).catch(e=>msg('网络错误：'+e.message));
+  client.auth.onAuthStateChange((_event,session)=>show(session?.user||null));
   async function act(mode){
     const email=el('authEmail').value.trim(),password=el('authPassword').value;
     if(!email||!password){msg('请填写 Email 和密码。');return}
